@@ -14,7 +14,10 @@ namespace AILabWork
         {
             SemanticNetwork semanticNetwork = new SemanticNetwork();
             semanticNetwork.ParseData("data.txt");
-            Console.WriteLine("end");
+            semanticNetwork.SetTransientRelations(1, 2);
+            semanticNetwork.CalculateAdditionalKnowledge();
+            Console.WriteLine(semanticNetwork.QueryKnowledgeBase(null, null, null).Aggregate((i, j) => i + '\n' + j));
+            Console.WriteLine("");
         }
     }
 }
