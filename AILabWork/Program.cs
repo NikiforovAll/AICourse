@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 
 namespace AILabWork
 {
-    class Program
+    static class Program
     {
         //lab1 
         static void Main(string[] args)
@@ -16,15 +17,35 @@ namespace AILabWork
             semanticNetwork.ParseData("data.txt");
             semanticNetwork.SetTransientRelations(1, 2);
             semanticNetwork.CalculateAdditionalKnowledge();
-            Console.WriteLine(String.Join("\n",semanticNetwork.QueryKnowledgeBase(14, null, null)));
+            Console.WriteLine(semanticNetwork.ShowSemanticNetwork());
+            Console.WriteLine("Please enter values for your query");
+            var queryList = new List<int?>();
+            Console.WriteLine("code1: ");
+            queryList.Add(Console.ReadLine().ConvertForQuery());
+            Console.WriteLine("relation: ");
+            queryList.Add(Console.ReadLine().ConvertForQuery());
+            Console.WriteLine("code2: ");
+            queryList.Add(Console.ReadLine().ConvertForQuery());
+            Console.WriteLine(queryList.Select((el, i) =>
+                el != null ? (i % 2 != 1 ?
+                semanticNetwork.Entities[el.Value] : semanticNetwork.Relations[el.Value].Name)
+                : "?"
+                ).Aggregate((i, j) => i + ' ' + j) + "\nAnswer:");
+            Console.WriteLine(String.Join("\n", semanticNetwork.QueryKnowledgeBase(queryList[0], queryList[1], queryList[2])));
+
             Console.WriteLine("");
-            semanticNetwork = new SemanticNetwork();
-            semanticNetwork.ParseData("data2.txt");
-            semanticNetwork.SetTransientRelations(1,2,4);
-            semanticNetwork.CalculateAdditionalKnowledge();
-            Console.WriteLine(String.Join("\n", semanticNetwork.QueryKnowledgeBase(null, null, null)));
+        }
 
+        private static int? ConvertForQuery(this string str)
+        {
+            return str == "?" ? null : Convert.ToInt32(str) as int?;
+        }
 
+        private static string ShowSemanticNetwork(this SemanticNetwork semanticNetwork)
+        {
+            return "Objects:\n" +
+                String.Join("\n", semanticNetwork.Entities.Keys.Select(x => $"{semanticNetwork.Entities[x]} code:{x}").ToList())
+                + "\nRelations\n" + String.Join("\n", semanticNetwork.Relations.Values.Select(x => x.ToString()));
         }
     }
 }

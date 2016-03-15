@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -109,12 +110,13 @@ namespace AILabWork
             }
             return resultList;
         }
+        
 
         public List<string> QueryKnowledgeBase(int? code1, int? relation, int? code2)
         {
 
             //var knowledgeBaseToQuery = KnowledgeBaseCalculated;
-            var knowledgeBaseToQuery = KnowledgeBaseCalculated.Except(KnowledgeBaseResource.Select(el => el)).ToList();// or Union
+            var knowledgeBaseToQuery = KnowledgeBaseCalculated.Union(KnowledgeBaseResource.Select(el => el)).ToList();// or Except
             var result = knowledgeBaseToQuery
                 .Where(el =>
                     (code1 == null || el.Obj1 == code1) &&
@@ -124,7 +126,7 @@ namespace AILabWork
                 .Select(GetHumanReadableForm).ToList();
             if (result.Count == 0)
             {
-                return new List<string>() { "NO" };
+                return new List<string>() { "Don't know" };
             }
             if (code1.HasValue && code2.HasValue && relation.HasValue)
             {
@@ -148,6 +150,8 @@ namespace AILabWork
         public int ID { get; set; }
         public string Name { get; set; }
         public int Type { get; set; }
+        public override string ToString() => $"{ID} - {Name} type: {Type}";
+
     }
 
     public class RelationEntity
@@ -165,6 +169,7 @@ namespace AILabWork
             // hash selection 
             return (Obj1.GetHashCode() * 100 + Obj2.GetHashCode() * 10 + Rel.GetHashCode());
         }
+        
     }
 
     public class KnowledgeBase : IEnumerable<RelationEntity>
