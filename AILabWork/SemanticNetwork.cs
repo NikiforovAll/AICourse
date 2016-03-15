@@ -97,9 +97,11 @@ namespace AILabWork
             if (knowledgeDictionary.ContainsKey(code))
             {
                 knowledgeDictionary[code]
-                    .Where(el => TransientRelations.Contains(type) && type >= el.Rel) //(1)
+                    .Where(el => TransientRelations.Contains(type) &&
+                                 Relations[type].Type <= Relations[el.Rel].Type) //(1)
                     .ToList()
                     .ForEach(el => resultList.AddRange(FindChildRelation(el.Obj2, el.Rel, mainCode)));
+                resultList.Add(new RelationEntity() {Obj1 = mainCode, Obj2 = code, Rel = type});
             }
             else
             {
@@ -112,7 +114,7 @@ namespace AILabWork
         {
 
             //var knowledgeBaseToQuery = KnowledgeBaseCalculated;
-            var knowledgeBaseToQuery = KnowledgeBaseResource.Union(KnowledgeBaseCalculated.Select(el => el)).ToList();
+            var knowledgeBaseToQuery = KnowledgeBaseCalculated.Except(KnowledgeBaseResource.Select(el => el)).ToList();// or Union
             var result = knowledgeBaseToQuery
                 .Where(el =>
                     (code1 == null || el.Obj1 == code1) &&
