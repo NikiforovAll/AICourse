@@ -49,6 +49,22 @@ namespace IntelligentAppPackage
                 t = true;
             return t;
         }
+
+        public string ShowModel()
+        {
+            var result = "ModulInterfaces: \n";
+            for (int i = 0; i < _IS.MI.Length; i++)
+            {
+                result += _IS.MI[i] + "\n";
+            }
+            result += "TrpObjects \n";
+            for (int i = 0; i < _IS.RP.Length; i++)
+            {
+                result += _IS.RP[i] + "\n";
+            }
+            return result;
+
+        }
         private List<VariableValue> GetParam(string modul)
         {
             return _IS.GetParam(modul);

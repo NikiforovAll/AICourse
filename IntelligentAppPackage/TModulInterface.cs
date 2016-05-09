@@ -20,6 +20,11 @@ namespace IntelligentAppPackage
             ModuleOutput = output;
             ModulParams = modulParams;
         }
-      
+        public override string ToString()
+        {
+            return $"{ModuleIdent} : {ModuleName} : {String.Join(", ", ModulParams)} :: {ModuleOutput}";
+        }
+
+
     }
 }

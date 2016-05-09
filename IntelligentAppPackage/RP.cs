@@ -25,14 +25,14 @@ namespace IntelligentAppPackage
         }
         public void PutValue(string param, double value)
         {
-            _trpObjects.Where( obj => obj.Ident == param).ToList().ForEach(obj => obj.Value = value);
+            _trpObjects.Where( obj => obj.Name == param).ToList().ForEach(obj => obj.Value = value);
         }
         public List<string> GetObjects()
         {
             return _trpObjects.Select(obj => obj.Ident).ToList();
         }
 
-        TrpObject GetTrpObject(string line)
+        private static TrpObject GetTrpObject(string line)
         {
             string[] m = line.Split(new char[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (!m.SelectMany(word => word.ToCharArray()).All(Char.IsLetterOrDigit))

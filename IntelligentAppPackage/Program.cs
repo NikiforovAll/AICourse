@@ -28,13 +28,14 @@ namespace IntelligentAppPackage
             var system = new Ippp(srB, srM, modulPath, basePath);
             Console.WriteLine("Task: ");
             string taskStr = "";
+            
             while (!srD.EndOfStream)
             {
                 var line = srD.ReadLine()?.Trim();
                 var splittedParams = line.Split(new char[] { '=', '-' }, StringSplitOptions.RemoveEmptyEntries);
                 if (splittedParams[1].Trim() != "?")
                 {
-                    SystemInputParams.Add(splittedParams[0], Double.Parse(splittedParams[1]));
+                    SystemInputParams.Add(splittedParams[0], Double.Parse(splittedParams[1].Trim()));
                     Console.WriteLine($"{{{splittedParams[0]}: {splittedParams[1]}}}");
                 }
 
@@ -54,7 +55,11 @@ namespace IntelligentAppPackage
             {
                 system.PutValue(parameter, SystemInputParams[parameter]);
             }
-
+            if (args.Length > 0 && args[0] == "--show")
+            {
+                Console.WriteLine(system.ShowModel());
+                Console.ReadKey();
+            }
             double s;
             bool f;
             bool t;

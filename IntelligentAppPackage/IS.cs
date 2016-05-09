@@ -13,19 +13,8 @@ namespace IntelligentAppPackage
 {
     public  class Is
     {
-        public void PutValue(string param, double value)
-        {
-            _rp.PutValue(param, value);
-            if (_values.ContainsKey(param))
-                _values[param] = value;
-            else
-                _values.Add(param, value);
-        }
-        public string ModulOutput(string modul)
-        {
-            var s = _mI.GetModulOutPut(modul) ?? _newMi.GetModulOutPut(modul);
-            return s;
-        }
+        public Mi MI => _mI;
+        public Rp RP => _rp;
         readonly Mi _mI;
         readonly Mi _newMi;
         readonly Rp _rp;
@@ -39,6 +28,19 @@ namespace IntelligentAppPackage
             _sr = sr;
             _newMi = new Mi();
             _pathB = basePath;
+        }
+        public void PutValue(string param, double value)
+        {
+            _rp.PutValue(param, value);
+            if (_values.ContainsKey(param))
+                _values[param] = value;
+            else
+                _values.Add(param, value);
+        }
+        public string ModulOutput(string modul)
+        {
+            var s = _mI.GetModulOutPut(modul) ?? _newMi.GetModulOutPut(modul);
+            return s;
         }
         private void ReadRp()
         {
@@ -200,7 +202,6 @@ namespace IntelligentAppPackage
                 if (!t)
                     for (int i = 0; i < l1.Count; i++)
                     {
-
                         string T = l1[i];
                         if (!(path.Contains(T) && badModuls.Contains(T)))
                         {

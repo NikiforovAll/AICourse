@@ -36,6 +36,9 @@ namespace IntelligentAppPackage
             }
         }
         public bool IsCalc { get; private set; }
-        
+        public override string ToString()
+        {
+            return $"{Ident} : {Name}: {_value}";
+        }
     }
 }
