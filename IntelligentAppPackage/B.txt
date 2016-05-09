@@ -1,0 +1,21 @@
+#1
+1: r : r
+2: R : R
+3: H : H
+4: t2a : t2a
+5: L : L
+6: V : V
+7: S : S
+8: Vk : Vk
+9: ta: ta
+#2
+V = F1(R) : Calc V
+S = F2(R) : Calc S
+t2a = F3(H, r) : Calc t2a
+R = F4(H, L, r) : Calc R
+ta = F5(t2a) : Calc t2a
+R = F6(r, ta) : Calc R
+L = F7(r,H) : Calc L
+Vk = F8(r, H) : Calc Vk
+
+
