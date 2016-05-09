@@ -15,7 +15,7 @@ namespace IntelligentAppPackage
     {
         public void PutValue(string param, double value)
         {
-            _rP.PutValue(param, value);
+            _rp.PutValue(param, value);
             if (_values.ContainsKey(param))
                 _values[param] = value;
             else
@@ -23,20 +23,19 @@ namespace IntelligentAppPackage
         }
         public string ModulOutput(string modul)
         {
-            string s = _mI.GetModulOutPut(modul);
-            if (s == null) s = _newMi.GetModulOutPut(modul);
+            var s = _mI.GetModulOutPut(modul) ?? _newMi.GetModulOutPut(modul);
             return s;
         }
-        Mi _mI;
-        Mi _newMi;
-        Rp _rP;
-        string _pathB;
-        StreamReader _sr;
-        Dictionary<string, Nullable<double>> _values;
+        readonly Mi _mI;
+        readonly Mi _newMi;
+        readonly Rp _rp;
+        readonly string _pathB;
+        readonly StreamReader _sr;
+        Dictionary<string, double?> _values;
         public Is(StreamReader sr, string basePath)
         {
             _mI = new Mi();
-            _rP = new Rp();
+            _rp = new Rp();
             _sr = sr;
             _newMi = new Mi();
             _pathB = basePath;
@@ -50,7 +49,7 @@ namespace IntelligentAppPackage
             {
                 if (line != "")
                 {
-                    _rP.Add(line);
+                    _rp.Add(line);
                 }
                 line = _sr.ReadLine();
             }
@@ -92,9 +91,9 @@ namespace IntelligentAppPackage
         }
         private bool IsCalculated(string unknown, out double result)
         {
-            return _rP.IsCalc(unknown, out result);
+            return _rp.IsCalc(unknown, out result);
         }
-        public bool getPath(string unknown, out Stack<string> path)
+        public bool GetPath(string unknown, out Stack<string> path)
         {
             bool t = false;
             path = new Stack<string>();
@@ -103,10 +102,10 @@ namespace IntelligentAppPackage
             List<string> badModuls = new List<string>();
             if (l.Count != 0 || l1.Count != 0)
             {
-                for (int i = 0; i < l.Count; i++)
+                foreach (string t1 in l)
                 {
                     t = true;
-                    string T = l[i];
+                    string T = t1;
                     path.Push(T);
                     List<string> param = _mI.GetModulParam(T);
                     Stack<string> temp = new Stack<string>();
@@ -116,7 +115,7 @@ namespace IntelligentAppPackage
                         b = isCalc(line);
                         if (!b)
                         {
-                            if (getPath(line, out temp, badModuls, path))
+                            if (GetPath(line, out temp, badModuls, path))
                             {
                                 Join(path, temp);
                                 _values.Add(line, null);
@@ -145,7 +144,7 @@ namespace IntelligentAppPackage
                             b = isCalc(line);
                             if (!b)
                             {
-                                if (getPath(line, out temp, badModuls, path))
+                                if (GetPath(line, out temp, badModuls, path))
                                 {
                                     Join(path, temp);
                                     _values.Add(line, null);
@@ -163,7 +162,7 @@ namespace IntelligentAppPackage
             }
             return t;
         }
-        public bool getPath(string unknown, out Stack<string> tpath, List<string> badModuls, Stack<string> path)
+        public bool GetPath(string unknown, out Stack<string> tpath, List<string> badModuls, Stack<string> path)
         {
             bool t = false;
             tpath = new Stack<string>();
@@ -185,7 +184,7 @@ namespace IntelligentAppPackage
                             b = isCalc(line);
                             if (!b)
                             {
-                                if (getPath(line, out temp, badModuls, path))
+                                if (GetPath(line, out temp, badModuls, path))
                                 {
                                     Join(tpath, temp);
                                     _values.Add(line, null);
@@ -217,7 +216,7 @@ namespace IntelligentAppPackage
                                 b = isCalc(line);
                                 if (!b)
                                 {
-                                    if (getPath(line, out temp, badModuls, path))
+                                    if (GetPath(line, out temp, badModuls, path))
                                     {
                                         Join(tpath, temp);
                                         _values.Add(line, null);
@@ -268,13 +267,13 @@ namespace IntelligentAppPackage
         }
         public List<string> GetObjects()
         {
-            return _rP.GetObjects();
+            return _rp.GetObjects();
         }
         public string GetDescription(string variable)
         {
-            for (int i = 0; i < _rP.Length; i++)
+            for (int i = 0; i < _rp.Length; i++)
             {
-                if (_rP[i].Ident == variable) return _rP[i].Name;
+                if (_rp[i].Ident == variable) return _rp[i].Name;
             }
             return "";
         }

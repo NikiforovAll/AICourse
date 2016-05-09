@@ -13,15 +13,15 @@ namespace IntelligentAppPackage
 {
     public class Ippp
     {
-        Is _is;
+        Is _IS;
         Dictionary<string, Expression> _expressions;
         Dictionary<string, Expression> _newExpressions;
         string _pathM;
         StreamReader _modulSr;
         public Ippp(StreamReader baseSr, StreamReader modulSr, string modulpath, string basePath)
         {
-            _is = new Is(baseSr, basePath);
-            _is.Start();
+            _IS = new Is(baseSr, basePath);
+            _IS.Start();
             _pathM = modulpath;
             this._modulSr = modulSr;
             Start();
@@ -31,34 +31,34 @@ namespace IntelligentAppPackage
             bool t = false;
             result = 0;
             f = true;
-            if (_is.isCalc(unknown, out result))
+            if (_IS.isCalc(unknown, out result))
                 t = true;
             Stack<string> s;
-            if (_is.getPath(unknown, out s))
+            if (_IS.GetPath(unknown, out s))
             {
                 while (s.Count != 0)
                 {
                     string modul = s.Pop();
                     double a;
-                    if (Culc(modul, GetParam(modul), out a))
+                    if (Calc(modul, GetParam(modul), out a))
                         f = false;
-                    _is.PutValue(_is.ModulOutput(modul), a);
+                    _IS.PutValue(_IS.ModulOutput(modul), a);
                 }
             }
-            if (_is.isCalc(unknown, out result))
+            if (_IS.isCalc(unknown, out result))
                 t = true;
             return t;
         }
         private List<VariableValue> GetParam(string modul)
         {
-            return _is.GetParam(modul);
+            return _IS.GetParam(modul);
         }
-        private bool Culc(string modul, List<VariableValue> variables, out double result)
+        private bool Calc(string modul, List<VariableValue> variables, out double result)
         {
             bool t = false;
             if (_expressions.ContainsKey(modul))
             {
-                result = ToolsHelper.Calculator.Calculate(_expressions[modul].Ce, variables);
+                result = ToolsHelper.Calculator.Calculate(_expressions[modul].CE, variables);
                 t = true;
 
             }
@@ -66,7 +66,7 @@ namespace IntelligentAppPackage
             {
                 if (_newExpressions.ContainsKey(modul))
                 {
-                    result = ToolsHelper.Calculator.Calculate(_newExpressions[modul].Ce, variables);
+                    result = ToolsHelper.Calculator.Calculate(_newExpressions[modul].CE, variables);
                     t = true;
                 }
                 else
@@ -76,11 +76,11 @@ namespace IntelligentAppPackage
         }
         public List<string> GetObjects()
         {
-            return _is.GetObjects();
+            return _IS.GetObjects();
         }
         public void PutValue(string param, double value)
         {
-            _is.PutValue(param, value);
+            _IS.PutValue(param, value);
         }
         public void Start()
         {
@@ -101,37 +101,27 @@ namespace IntelligentAppPackage
             StreamWriter sw = new StreamWriter(_pathM, true);
             foreach (KeyValuePair<string, Expression> kvp in _newExpressions)
             {
-                string s = kvp.Key + " " + kvp.Value.Output + "=" + ToolsHelper.Decompiler.Decompile(kvp.Value.Ce);
+                string s = kvp.Key + " " + kvp.Value.Output + "=" + ToolsHelper.Decompiler.Decompile(kvp.Value.CE);
                 sw.WriteLine(s);
             }
             sw.Close();
-            _is.Close();
+            _IS.Close();
         }
         class Expression
         {
-            CompiledExpression _cE;
-            string _output;
             public Expression(string output, CompiledExpression ce)
             {
-                _cE = ce;
-                _output = output;
+                CE = ce;
+                Output = output;
             }
-            public CompiledExpression Ce
-            {
-                get { return _cE; }
-            }
-            public string Output
-            {
-                get { return _output; }
-            }
+            public CompiledExpression CE { get; }
+            public string Output { get; }
         }
         string Parse(string modul, out Expression ex)
         {
             string[] m = modul.Split(' ', '=', ':');
-            // Compiling an expression
             PreparedExpression preparedExpression = ToolsHelper.Parser.Parse(m[2]);
             CompiledExpression compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
-            // Optimizing an expression
             CompiledExpression optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
             ex = new Expression(m[1], optimizedExpression);
             return m[0];
@@ -139,10 +129,8 @@ namespace IntelligentAppPackage
         string Parse(string modul, out Expression ex, out string description)
         {
             string[] m = modul.Split(' ', '=', ':');
-            // Compiling an expression
             PreparedExpression preparedExpression = ToolsHelper.Parser.Parse(m[2]);
             CompiledExpression compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
-            // Optimizing an expression
             CompiledExpression optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
             ex = new Expression(m[1], optimizedExpression);
             description = m[3];
@@ -154,11 +142,11 @@ namespace IntelligentAppPackage
             string sn;
             string s = Parse(modul, out ex, out sn);
             _newExpressions.Add(s, ex);
-            _is.AddModul(s, sn, ex.Output, ex.Ce.CompiledExpressionVariebles);
+            _IS.AddModul(s, sn, ex.Output, ex.CE.CompiledExpressionVariebles);
         }
         public string GetDescription(string variable)
         {
-            return _is.GetDescription(variable);
+            return _IS.GetDescription(variable);
         }
     }
 }
