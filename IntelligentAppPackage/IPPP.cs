@@ -60,7 +60,6 @@ namespace IntelligentAppPackage
             {
                 result = ToolsHelper.Calculator.Calculate(_expressions[modul].CE, variables);
                 t = true;
-
             }
             else
             {

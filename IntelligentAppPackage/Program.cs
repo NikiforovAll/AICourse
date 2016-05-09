@@ -75,7 +75,7 @@ namespace IntelligentAppPackage
                 }
                 
             }
-            Console.WriteLine(!t ? "Not enotgh data" : $"Result: {taskStr} = {s}");
+            Console.WriteLine(!t ? "Not enough data" : $"Result: {taskStr} = {s}");
             srB.Close();
             srM.Close();
             srD.Close();

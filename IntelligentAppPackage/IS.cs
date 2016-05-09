@@ -108,13 +108,12 @@ namespace IntelligentAppPackage
                     string T = t1;
                     path.Push(T);
                     List<string> param = _mI.GetModulParam(T);
-                    Stack<string> temp = new Stack<string>();
-                    bool b = true;
                     foreach (string line in param)
                     {
-                        b = isCalc(line);
+                        var b = isCalc(line);
                         if (!b)
                         {
+                            Stack<string> temp;
                             if (GetPath(line, out temp, badModuls, path))
                             {
                                 Join(path, temp);
@@ -151,12 +150,10 @@ namespace IntelligentAppPackage
                                     b = true;
                                 }
                             }
-                            t = t && b;
-                            if (!b)
-                            {
-                                badModuls.Add(path.Pop());
-                                break;
-                            }
+                            t = b;
+                            if (b) continue;
+                            badModuls.Add(path.Pop());
+                            break;
                         }
                     }
             }
