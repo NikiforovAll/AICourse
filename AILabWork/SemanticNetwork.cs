@@ -56,7 +56,7 @@ namespace AILabWork
                 if (block == 2 && resourceLine.Length == 3)
                 {
                     var code = Convert.ToInt32(resourceLine[0]);
-                    Relations.Add(code, new Relation() { ID = code, Name = resourceLine[1], Type = Convert.ToInt32(resourceLine[2]) });
+                    Relations.Add(code, new Relation() { Id = code, Name = resourceLine[1], Type = Convert.ToInt32(resourceLine[2]) });
                     continue;
                 }
                 if (block == 3 && resourceLine.Length == 3)
@@ -140,17 +140,17 @@ namespace AILabWork
 
     public class Entity
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 
 
     public class Relation
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int Type { get; set; }
-        public override string ToString() => $"{ID} - {Name} type: {Type}";
+        public override string ToString() => $"{Id} - {Name} type: {Type}";
 
     }
 
