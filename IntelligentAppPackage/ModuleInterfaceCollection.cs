@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntelligentAppPackage
 {
-    public class Mi
+    public class ModuleInterfaceCollection
     {
         private readonly List<ModulInterface> _tModulInterfaces = new List<ModulInterface>(50);
         public int Length => _tModulInterfaces.Count;
@@ -20,15 +20,10 @@ namespace IntelligentAppPackage
             _tModulInterfaces.Add(new ModulInterface(id, name, output, param));
         }
         public string GetModulOutPut(string modulIdent) => _tModulInterfaces.LastOrDefault(mi => mi.ModuleIdent == modulIdent)?.ModuleOutput;
-
         public List<string> GetModulParam(string modulIdent) => _tModulInterfaces.LastOrDefault(mi => mi.ModuleIdent == modulIdent)?.ModulParams;
-
         public List<string> GetModulsIdent(string unknown) => _tModulInterfaces.Where(mi => mi.ModuleOutput == unknown).Select(mi => mi.ModuleIdent).ToList();
-
         public List<string> GetModulsName(string unknown) => _tModulInterfaces.Where(mi => mi.ModuleOutput == unknown).Select(mi => mi.ModuleName).ToList();
-
         ModulInterface GetByName(string modul) => _tModulInterfaces.FirstOrDefault(mi => mi.ModuleName == modul);
-
         ModulInterface GetByIdent(string modul) => _tModulInterfaces.FirstOrDefault(mi => mi.ModuleIdent == modul);
 
         ModulInterface GetTModulInterface(string line)
@@ -41,19 +36,18 @@ namespace IntelligentAppPackage
         bool ParseModul(string line, out ModulInterface T)
         {
             line = line.Replace(" ", "");
-            string id = "";
-            string output;
-            string name = "";
-            List<string> param = new List<string>();
-            bool t = true;
-            int i = 0;
-            int j = 0;
+            var id = "";
+            var name = "";
+            var param = new List<string>();
+            var t = true;
+            var i = 0;
+            var j = 0;
             for (; i < line.Length && t; i++)
             {
                 t = Char.IsLetterOrDigit(line[i]);
             }
-            output = line.Substring(0, i - 1);
-            bool b = false;
+            var output = line.Substring(0, i - 1);
+            var b = false;
             if (line[i - 1] == '=')
             {
                 t = true;

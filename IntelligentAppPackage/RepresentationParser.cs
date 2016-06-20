@@ -11,41 +11,41 @@ using ELW.Library.Math.Tools;
 
 namespace IntelligentAppPackage
 {
-    public class Ippp
+    public class RepresentationParser
     {
-        Is _IS;
+        IntelligentSolver _intelligentSolver;
         Dictionary<string, Expression> _expressions;
         Dictionary<string, Expression> _newExpressions;
         string _pathM;
         StreamReader _modulSr;
-        public Ippp(StreamReader baseSr, StreamReader modulSr, string modulpath, string basePath)
+        public RepresentationParser(StreamReader baseSr, StreamReader modulSr, string modulpath, string basePath)
         {
-            _IS = new Is(baseSr, basePath);
-            _IS.Start();
+            _intelligentSolver = new IntelligentSolver(baseSr, basePath);
+            _intelligentSolver.Start();
             _pathM = modulpath;
             this._modulSr = modulSr;
             Start();
         }
         public bool AnswerQuestion(string unknown, out double result, out bool f)
         {
-            bool t = false;
+            var t = false;
             result = 0;
             f = true;
-            if (_IS.isCalc(unknown, out result))
+            if (_intelligentSolver.IsCalc(unknown, out result))
                 t = true;
             Stack<string> s;
-            if (_IS.GetPath(unknown, out s))
+            if (_intelligentSolver.GetPath(unknown, out s))
             {
                 while (s.Count != 0)
                 {
-                    string modul = s.Pop();
+                    var modul = s.Pop();
                     double a;
                     if (Calc(modul, GetParam(modul), out a))
                         f = false;
-                    _IS.PutValue(_IS.ModulOutput(modul), a);
+                    _intelligentSolver.PutValue(_intelligentSolver.ModulOutput(modul), a);
                 }
             }
-            if (_IS.isCalc(unknown, out result))
+            if (_intelligentSolver.IsCalc(unknown, out result))
                 t = true;
             return t;
         }
@@ -53,35 +53,35 @@ namespace IntelligentAppPackage
         public string ShowModel()
         {
             var result = "ModulInterfaces: \n";
-            for (int i = 0; i < _IS.MI.Length; i++)
+            for (var i = 0; i < _intelligentSolver.ModuleInterfaceCollection.Length; i++)
             {
-                result += _IS.MI[i] + "\n";
+                result += _intelligentSolver.ModuleInterfaceCollection[i] + "\n";
             }
             result += "TrpObjects \n";
-            for (int i = 0; i < _IS.RP.Length; i++)
+            for (var i = 0; i < _intelligentSolver.RepresentationModule.Length; i++)
             {
-                result += _IS.RP[i] + "\n";
+                result += _intelligentSolver.RepresentationModule[i] + "\n";
             }
             return result;
 
         }
         private List<VariableValue> GetParam(string modul)
         {
-            return _IS.GetParam(modul);
+            return _intelligentSolver.GetParam(modul);
         }
         private bool Calc(string modul, List<VariableValue> variables, out double result)
         {
-            bool t = false;
+            var t = false;
             if (_expressions.ContainsKey(modul))
             {
-                result = ToolsHelper.Calculator.Calculate(_expressions[modul].CE, variables);
+                result = ToolsHelper.Calculator.Calculate(_expressions[modul].Ce, variables);
                 t = true;
             }
             else
             {
                 if (_newExpressions.ContainsKey(modul))
                 {
-                    result = ToolsHelper.Calculator.Calculate(_newExpressions[modul].CE, variables);
+                    result = ToolsHelper.Calculator.Calculate(_newExpressions[modul].Ce, variables);
                     t = true;
                 }
                 else
@@ -91,11 +91,11 @@ namespace IntelligentAppPackage
         }
         public List<string> GetObjects()
         {
-            return _IS.GetObjects();
+            return _intelligentSolver.GetObjects();
         }
         public void PutValue(string param, double value)
         {
-            _IS.PutValue(param, value);
+            _intelligentSolver.PutValue(param, value);
         }
         public void Start()
         {
@@ -103,50 +103,49 @@ namespace IntelligentAppPackage
             _newExpressions = new Dictionary<string, Expression>();
             while (!_modulSr.EndOfStream)
             {
-                string line = _modulSr.ReadLine();
-                if (line != "")
-                {
-                    Expression ex;
-                    _expressions.Add(Parse(line, out ex), ex);
-                }
+                var line = _modulSr.ReadLine();
+                if (line == "") continue;
+                Expression ex;
+                _expressions.Add(Parse(line, out ex), ex);
             }
         }
         public void Close()
         {
-            StreamWriter sw = new StreamWriter(_pathM, true);
-            foreach (KeyValuePair<string, Expression> kvp in _newExpressions)
+            var sw = new StreamWriter(_pathM, true);
+            foreach (var kvp in _newExpressions)
             {
-                string s = kvp.Key + " " + kvp.Value.Output + "=" + ToolsHelper.Decompiler.Decompile(kvp.Value.CE);
+                var s = kvp.Key + " " + kvp.Value.Output + "=" + ToolsHelper.Decompiler.Decompile(kvp.Value.Ce);
                 sw.WriteLine(s);
             }
             sw.Close();
-            _IS.Close();
         }
         class Expression
         {
             public Expression(string output, CompiledExpression ce)
             {
-                CE = ce;
+                Ce = ce;
                 Output = output;
             }
-            public CompiledExpression CE { get; }
+            public CompiledExpression Ce { get; }
             public string Output { get; }
         }
-        string Parse(string modul, out Expression ex)
+
+        static string Parse(string modul, out Expression ex)
         {
-            string[] m = modul.Split(' ', '=', ':');
-            PreparedExpression preparedExpression = ToolsHelper.Parser.Parse(m[2]);
-            CompiledExpression compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
-            CompiledExpression optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
+            var m = modul.Split(' ', '=', ':');
+            var preparedExpression = ToolsHelper.Parser.Parse(m[2]);
+            var compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
+            var optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
             ex = new Expression(m[1], optimizedExpression);
             return m[0];
         }
-        string Parse(string modul, out Expression ex, out string description)
+
+        static string Parse(string modul, out Expression ex, out string description)
         {
-            string[] m = modul.Split(' ', '=', ':');
-            PreparedExpression preparedExpression = ToolsHelper.Parser.Parse(m[2]);
-            CompiledExpression compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
-            CompiledExpression optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
+            var m = modul.Split(' ', '=', ':');
+            var preparedExpression = ToolsHelper.Parser.Parse(m[2]);
+            var compiledExpression = ToolsHelper.Compiler.Compile(preparedExpression);
+            var optimizedExpression = ToolsHelper.Optimizer.Optimize(compiledExpression);
             ex = new Expression(m[1], optimizedExpression);
             description = m[3];
             return m[0];
@@ -155,13 +154,12 @@ namespace IntelligentAppPackage
         {
             Expression ex;
             string sn;
-            string s = Parse(modul, out ex, out sn);
+            var s = Parse(modul, out ex, out sn);
             _newExpressions.Add(s, ex);
-            _IS.AddModul(s, sn, ex.Output, ex.CE.CompiledExpressionVariebles);
         }
         public string GetDescription(string variable)
         {
-            return _IS.GetDescription(variable);
+            return _intelligentSolver.GetDescription(variable);
         }
     }
 }

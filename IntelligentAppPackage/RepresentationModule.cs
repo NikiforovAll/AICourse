@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IntelligentAppPackage
 {
-    public class Rp
+    public class RepresentationModule
     {
         private readonly List<TrpObject> _trpObjects = new List<TrpObject>(50);
         public int Length => _trpObjects.Count;
@@ -34,7 +34,7 @@ namespace IntelligentAppPackage
 
         private static TrpObject GetTrpObject(string line)
         {
-            string[] m = line.Split(new char[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var m = line.Split(new char[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (!m.SelectMany(word => word.ToCharArray()).All(Char.IsLetterOrDigit))
                 throw new Exception("Illegal name");
             return new TrpObject(m[0], m[1]);

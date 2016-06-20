@@ -16,8 +16,6 @@ namespace IntelligentAppPackage
         public static Dictionary<string, double> SystemInputParams = new Dictionary<string, double>();
         static void Main(string[] args)
         {
-            var expresion = new List<CompiledExpression>();
-            var ass = Assembly.GetExecutingAssembly();
             var path = Environment.CurrentDirectory;
             var modulPath = path + "\\M.txt";
             var basePath = path + "\\B.txt";
@@ -25,20 +23,19 @@ namespace IntelligentAppPackage
             var srM = new StreamReader(modulPath);
             var srB = new StreamReader(basePath);
             var srD = new StreamReader(dataPath);
-            var system = new Ippp(srB, srM, modulPath, basePath);
+            var system = new RepresentationParser(srB, srM, modulPath, basePath);
             Console.WriteLine("Task: ");
-            string taskStr = "";
-            
+            var taskStr = "";
+
             while (!srD.EndOfStream)
             {
                 var line = srD.ReadLine()?.Trim();
-                var splittedParams = line.Split(new char[] { '=', '-' }, StringSplitOptions.RemoveEmptyEntries);
-                if (splittedParams[1].Trim() != "?")
+                var splittedParams = line?.Split(new char[] { '=', '-' }, StringSplitOptions.RemoveEmptyEntries);
+                if (splittedParams?[1].Trim() != "?")
                 {
                     SystemInputParams.Add(splittedParams[0], Double.Parse(splittedParams[1].Trim()));
                     Console.WriteLine($"{{{splittedParams[0]}: {splittedParams[1]}}}");
                 }
-
                 else
                 {
                     if (taskStr != string.Empty)
@@ -49,7 +46,6 @@ namespace IntelligentAppPackage
                     taskStr = splittedParams[0];
                     Console.WriteLine($" {taskStr} - ?");
                 }
-
             }
             foreach (var parameter in SystemInputParams.Keys)
             {
@@ -70,7 +66,6 @@ namespace IntelligentAppPackage
                 Console.WriteLine("Task was not found");
                 return;
             }
-            //if (!f) Console.WriteLine("Unknown modul in base");
             if (SystemInputParams.ContainsKey(taskStr))
             {
                 if (Math.Abs(SystemInputParams[taskStr] - s) > 0.001)
@@ -78,7 +73,6 @@ namespace IntelligentAppPackage
                     Console.WriteLine("ERROR: Inconsistent data");
                     return;
                 }
-                
             }
             Console.WriteLine(!t ? "Not enough data" : $"Result: {taskStr} = {s}");
             srB.Close();
